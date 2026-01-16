@@ -2,6 +2,8 @@
 
 Interactive 3D depth effect using depth maps and WebGL shaders. This project was created for the YouTube video **"Depth Map | Creative Development Secrets #1"**.
 
+https://github.com/user-attachments/assets/91890669-51d1-4c9e-8663-e69f70fe1770
+
 ## What is this effect?
 
 The **Depth Map Effect** creates an illusion of 3D depth on a 2D image by using a grayscale depth map. The depth map contains information about how "far" or "close" each pixel is from the viewer:
