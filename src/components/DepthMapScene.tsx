@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { useControls } from "leva";
@@ -50,11 +50,32 @@ const fragmentShader = `
   }
 `;
 
-function DepthImage() {
+const IMAGE_OPTIONS = {
+  Girl: {
+    texture: "/assets/base-img.png",
+    depth: "/assets/depth-map.png",
+  },
+  Cat: {
+    texture: "/assets/cat_img.jpg",
+    depth: "/assets/cat_depth_map.png",
+  },
+};
+
+const planeMovement = 0.0085;
+
+type ImageOption = keyof typeof IMAGE_OPTIONS;
+
+function DepthImage({ selectedImage }: { selectedImage: ImageOption }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+
+  // Mouse for depth effect
   const mouseTarget = useRef(new THREE.Vector2(0, 0));
   const mouseCurrent = useRef(new THREE.Vector2(0, 0));
+
+  // Mouse for plane movement
+  const planePositionTarget = useRef(new THREE.Vector3(0, 0, 0));
+  const planePositionCurrent = useRef(new THREE.Vector3(0, 0, 0));
 
   const { viewport } = useThree();
 
@@ -74,21 +95,21 @@ function DepthImage() {
         label: "Pivot",
       },
       rangeMin: {
-        value: 0.06,
+        value: 0.09,
         min: 0,
         max: 0.38,
         step: 0.001,
         label: "Range Min",
       },
       rangeMax: {
-        value: 0.18,
+        value: 0.22,
         min: 0,
         max: 0.7,
         step: 0.001,
         label: "Range Max",
       },
       smoothing: {
-        value: 0.1,
+        value: 0.33,
         min: 0.01,
         max: 0.5,
         step: 0.01,
@@ -100,11 +121,17 @@ function DepthImage() {
   // Convert pivot option to numeric value
   const pivotValue = pivot === "Front" ? 1.0 : 0.0;
 
-  // Load textures with Suspense support
-  const [texture, depthMap] = useLoader(TextureLoader, [
-    "/assets/base-img.png",
-    "/assets/depth-map.png",
+  // Load all textures
+  const allTextures = useLoader(TextureLoader, [
+    IMAGE_OPTIONS.Girl.texture,
+    IMAGE_OPTIONS.Girl.depth,
+    IMAGE_OPTIONS.Cat.texture,
+    IMAGE_OPTIONS.Cat.depth,
   ]);
+
+  // Select current textures based on selection (fixed logic)
+  const texture = selectedImage === "Girl" ? allTextures[0] : allTextures[2];
+  const depthMap = selectedImage === "Girl" ? allTextures[1] : allTextures[3];
 
   // Calculate scale to maintain aspect ratio (cover behavior)
   const imageAspect = texture.image
@@ -116,25 +143,37 @@ function DepthImage() {
   let scaleY = viewport.height;
 
   if (viewportAspect > imageAspect) {
-    // Viewport is wider than image - scale based on width
     scaleY = viewport.width / imageAspect;
   } else {
-    // Viewport is taller than image - scale based on height
     scaleX = viewport.height * imageAspect;
   }
 
-  // Create uniforms - only recreate when textures change
-  const uniforms = useRef({
-    uTexture: { value: texture },
-    uDepthMap: { value: depthMap },
-    uMouse: { value: new THREE.Vector2(0, 0) },
-    uAmount: { value: amount },
-    uPivot: { value: pivotValue },
-    uRange: { value: new THREE.Vector2(rangeMin, rangeMax) },
-  }).current;
+  // Create uniforms with useMemo - include selectedImage in deps to recreate on change
+  const uniforms = useMemo(
+    () => ({
+      uTexture: { value: texture },
+      uDepthMap: { value: depthMap },
+      uMouse: { value: new THREE.Vector2(0, 0) },
+      uAmount: { value: amount },
+      uPivot: { value: pivotValue },
+      uRange: { value: new THREE.Vector2(rangeMin, rangeMax) },
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedImage]
+  );
 
-  // Mouse movement handler
+  // Update texture uniforms when selection changes
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTexture.value = texture;
+      materialRef.current.uniforms.uDepthMap.value = depthMap;
+      materialRef.current.needsUpdate = true;
+    }
+  }, [texture, depthMap]);
+
+  // Animation frame handler
   useFrame(() => {
+    // Update shader uniforms
     if (materialRef.current) {
       // Lerp mouse position with configurable smoothing
       mouseCurrent.current.lerp(mouseTarget.current, smoothing);
@@ -144,6 +183,15 @@ function DepthImage() {
       materialRef.current.uniforms.uPivot.value = pivotValue;
       materialRef.current.uniforms.uRange.value.set(rangeMin, rangeMax);
     }
+
+    // Update plane position with momentum
+    if (meshRef.current) {
+      planePositionCurrent.current.lerp(
+        planePositionTarget.current,
+        smoothing * 0.8
+      );
+      meshRef.current.position.copy(planePositionCurrent.current);
+    }
   });
 
   return (
@@ -151,13 +199,22 @@ function DepthImage() {
       ref={meshRef}
       scale={[scaleX, scaleY, 1]}
       onPointerMove={(e) => {
-        mouseTarget.current.set(
-          (e.point.x / scaleX) * 2,
-          (e.point.y / scaleY) * 2
+        const normalizedX = (e.point.x / scaleX) * 2;
+        const normalizedY = (e.point.y / scaleY) * 2;
+
+        // Update depth effect mouse
+        mouseTarget.current.set(normalizedX, normalizedY);
+
+        // Update plane position target (inverted for natural feel)
+        planePositionTarget.current.set(
+          -normalizedX * planeMovement * viewport.width,
+          -normalizedY * planeMovement * viewport.height,
+          0
         );
       }}
       onPointerLeave={() => {
         mouseTarget.current.set(0, 0);
+        planePositionTarget.current.set(0, 0, 0);
       }}
     >
       <planeGeometry args={[1, 1]} />
@@ -171,16 +228,29 @@ function DepthImage() {
   );
 }
 
+function Scene() {
+  const { image } = useControls("Image", {
+    image: {
+      value: "Girl" as ImageOption,
+      options: ["Girl", "Cat"] as ImageOption[],
+      label: "Select Image",
+    },
+  });
+
+  // Key prop forces complete re-mount when image changes
+  return <DepthImage key={image} selectedImage={image} />;
+}
+
 export default function DepthMapScene() {
   return (
-    <div className="inset-0 w-[90vw] h-[90vh]">
+    <div className="absolute w-full h-full scale-105">
       <Canvas
         orthographic
         camera={{ zoom: 1, position: [0, 0, 100] }}
         gl={{ antialias: true, alpha: false }}
       >
         <Suspense fallback={null}>
-          <DepthImage />
+          <Scene />
         </Suspense>
       </Canvas>
     </div>

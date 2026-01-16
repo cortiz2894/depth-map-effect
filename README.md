@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Depth Map Effect | Creative Development Secrets #1
+
+Interactive 3D depth effect using depth maps and WebGL shaders. This project was created for the YouTube video **"Depth Map | Creative Development Secrets #1"**.
+
+## What is this effect?
+
+The **Depth Map Effect** creates an illusion of 3D depth on a 2D image by using a grayscale depth map. The depth map contains information about how "far" or "close" each pixel is from the viewer:
+
+- **White areas** = closer to the viewer (foreground)
+- **Black areas** = farther from the viewer (background)
+
+When the mouse moves, the shader displaces pixels based on their depth value, creating a parallax effect that makes the image appear to have real depth. Combined with smooth plane movement, it creates an immersive pseudo-3D experience.
+
+### How it works
+
+1. **Base Image**: The original photograph or artwork
+2. **Depth Map**: A grayscale image where brightness indicates depth
+3. **WebGL Shader**: Reads the depth map and displaces UV coordinates based on mouse position
+4. **Smoothing & Momentum**: Lerp interpolation creates fluid, natural movement
+
+## Tech Stack
+
+- **Next.js 16** - React framework
+- **React Three Fiber** - React renderer for Three.js
+- **Three.js** - WebGL library
+- **Leva** - GUI controls for real-time parameter tweaking
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Run development server
 pnpm dev
-# or
-bun dev
+
+# Build for production
+pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the effect.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Controls (Leva Panel)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Control | Description |
+|---------|-------------|
+| **Select Image** | Switch between available images |
+| **Amount** | Intensity of the depth displacement |
+| **Pivot** | Front/Back - determines which layer moves |
+| **Range Min/Max** | Depth range that gets affected |
+| **Smoothing** | Mouse movement interpolation speed |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  components/
+    DepthMapScene.tsx   # Main Three.js scene component
+  app/
+    page.tsx            # Home page
+public/
+  assets/
+    base-img.png        # Base image
+    depth-map.png       # Corresponding depth map
+    cat_img.jpg         # Alternative image
+    cat_depth_map.png   # Alternative depth map
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Creating Your Own Depth Maps
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+You can generate depth maps using:
+- **AI tools**: Depth Anything, MiDaS, or similar models
+- **Photoshop/GIMP**: Manual painting with gradients
+- **Blender**: Render Z-depth pass from 3D scenes
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Author
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Christian Ortiz** - Creative Developer
+
+### Connect with me
+
+- **Portfolio**: [cortiz.dev](https://cortiz.dev/)
+- **YouTube**: [@cortizdev](https://www.youtube.com/@cortizdev)
+- **X (Twitter)**: [@cortiz2894](https://x.com/cortiz2894)
+- **LinkedIn**: [Christian Daniel Ortiz](https://www.linkedin.com/in/christian-daniel-ortiz-ororbia-95b14210b/)
+
+### Contact
+
+For inquiries, collaborations or questions: **cortiz2894@gmail.com**
+
+---
+
+If you found this useful, consider subscribing to my YouTube channel for more creative development content!
