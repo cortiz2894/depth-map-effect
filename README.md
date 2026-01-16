@@ -18,15 +18,6 @@ When the mouse moves, the shader displaces pixels based on their depth value, cr
 3. **WebGL Shader**: Reads the depth map and displaces UV coordinates based on mouse position
 4. **Smoothing & Momentum**: Lerp interpolation creates fluid, natural movement
 
-## Tech Stack
-
-- **Next.js 16** - React framework
-- **React Three Fiber** - React renderer for Three.js
-- **Three.js** - WebGL library
-- **Leva** - GUI controls for real-time parameter tweaking
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-
 ## Getting Started
 
 ```bash
@@ -42,38 +33,31 @@ pnpm build
 
 Open [http://localhost:3000](http://localhost:3000) to see the effect.
 
+## Tech Stack
+
+- **Next.js 16** - React framework
+- **React Three Fiber** - React renderer for Three.js
+- **Three.js** - WebGL library
+- **Leva** - GUI controls for real-time parameter tweaking
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+
 ## Controls (Leva Panel)
 
-| Control | Description |
-|---------|-------------|
-| **Select Image** | Switch between available images |
-| **Amount** | Intensity of the depth displacement |
-| **Pivot** | Front/Back - determines which layer moves |
-| **Range Min/Max** | Depth range that gets affected |
-| **Smoothing** | Mouse movement interpolation speed |
-
-## Project Structure
-
-```
-src/
-  components/
-    DepthMapScene.tsx   # Main Three.js scene component
-  app/
-    page.tsx            # Home page
-public/
-  assets/
-    base-img.png        # Base image
-    depth-map.png       # Corresponding depth map
-    cat_img.jpg         # Alternative image
-    cat_depth_map.png   # Alternative depth map
-```
+| Control           | Description                               |
+| ----------------- | ----------------------------------------- |
+| **Select Image**  | Switch between available images           |
+| **Amount**        | Intensity of the depth displacement       |
+| **Pivot**         | Front/Back - determines which layer moves |
+| **Range Min/Max** | Depth range that gets affected            |
+| **Smoothing**     | Mouse movement interpolation speed        |
 
 ## Creating Your Own Depth Maps
 
 You can generate depth maps using:
+
 - **AI tools**: Depth Anything, MiDaS, or similar models
-- **Photoshop/GIMP**: Manual painting with gradients
-- **Blender**: Render Z-depth pass from 3D scenes
+- **UnicornStudio**: Generate Depth Map option
 
 ---
 
