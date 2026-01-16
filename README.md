@@ -2,7 +2,8 @@
 
 Interactive 3D depth effect using depth maps and WebGL shaders. This project was created for the YouTube video **"Depth Map | Creative Development Secrets #1"**.
 
-https://github.com/user-attachments/assets/91890669-51d1-4c9e-8663-e69f70fe1770
+https://github.com/user-attachments/assets/ff7cf22e-137f-49a7-8c96-f31727f661b5
+
 
 ## What is this effect?
 
