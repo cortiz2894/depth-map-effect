@@ -1,8 +1,10 @@
-# Depth Map Effect | Creative Development Secrets #1
+# Depth Map Effect | Creative Development Tricks #1
 
-Interactive 3D depth effect using depth maps and WebGL shaders. This project was created for the YouTube video **"Depth Map | Creative Development Secrets #1"**.
+Interactive 3D depth effect using depth maps and WebGL shaders. This project was created for the YouTube video **"Depth Map | Creative Development Tricks #1"**.
 
-
+![Mouse Effects Preview](https://img.shields.io/badge/Next.js-16.1-black?style=flat-square&logo=next.js)
+![Three.js](https://img.shields.io/badge/Three.js-0.182-black?style=flat-square&logo=three.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 
 https://github.com/user-attachments/assets/5c886c80-d8eb-4d53-8dd9-d7f4512c5876
 
